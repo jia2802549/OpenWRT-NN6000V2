@@ -62,7 +62,9 @@ if [[ "${WRT_TARGET^^}" == *"QUALCOMMAX"* ]]; then
 		echo "qualcommax set up nowifi successfully!"
 	fi
 fi
-# 开启内核原生BBR+FQ队列（修复路径问题）
+# 切换到源码目录执行内核配置工具，解决路径错位
+cd $GITHUB_WORKSPACE/wrt
 ./scripts/config --set-val CONFIG_TCP_BBR y
 ./scripts/config --set-val CONFIG_NET_SCH_FQ y
 ./scripts/config --set-val CONFIG_NET_SCH_FQ_CODEL y
+cd $GITHUB_WORKSPACE
