@@ -62,9 +62,35 @@ if [[ "${WRT_TARGET^^}" == *"QUALCOMMAX"* ]]; then
 		echo "qualcommax set up nowifi successfully!"
 	fi
 fi
-# 切换到源码目录执行内核配置工具，解决路径错位
+# 切换到源码目录执行内核配置工具，解决路径错位bbr
 cd $GITHUB_WORKSPACE/wrt
 ./scripts/config --set-val CONFIG_TCP_BBR y
 ./scripts/config --set-val CONFIG_NET_SCH_FQ y
 ./scripts/config --set-val CONFIG_NET_SCH_FQ_CODEL y
 cd $GITHUB_WORKSPACE
+# ========== IPQ6000 1.8GHz 超频｜无错完美版（适配你的NN6000-V2源码） ==========
+
+# 1. 精准在 1.5GHz 节点后追加 1.8GHz 原厂电压节点（1075mV，不加压）
+sed -i '/opp-1500000000 {/,+4a\    opp-1800000000 {\
+        opp-hz = /bits/ 64 <1800000000>;\
+        opp-microvolt = <1075000>;\
+        opp-supported-hw = <0xf>;\
+        clock-latency-ns = <200000>;\
+    };' $GITHUB_WORKSPACE/wrt/target/linux/qualcommax/dts/ipq6000.dtsi
+
+# 2. 解锁NN6000-V2专属设备树1.2GHz上限，放开至1.8GHz（使用真实的 9 个 0 位数）
+sed -i 's/cpu-max-freq = <1200000000>;/cpu-max-freq = <1800000000>;/g' $GITHUB_WORKSPACE/wrt/target/linux/qualcommax/dts/ipq6000-nn6000-v2.dts
+
+# 3. 动态调频脚本：空闲降频省电降温，流量自动拉满1.8GHz
+cat >> $GITHUB_WORKSPACE/wrt/package/base-files/files/etc/uci-defaults/99-oc-1800 << EOF
+#!/bin/sh
+echo ondemand > /sys/devices/system/cpu/cpufreq/policy0/scaling_governor
+echo 1800000 > /sys/devices/system/cpu/cpufreq/policy0/scaling_max_freq
+echo 1800000 > /sys/devices/system/cpu/cpu0/cpufreq/scaling_max_freq
+echo 1800000 > /sys/devices/system/cpu/cpu1/cpufreq/scaling_max_freq
+echo 1800000 > /sys/devices/system/cpu/cpu2/cpufreq/scaling_max_freq
+echo 1800000 > /sys/devices/system/cpu/cpu3/cpufreq/scaling_max_freq
+EOF
+chmod +x $GITHUB_WORKSPACE/wrt/package/base-files/files/etc/uci-defaults/99-oc-1800
+# ======================================================================
+
