@@ -129,3 +129,10 @@ UPDATE_VERSION "sing-box"
 if [ -f "$GITHUB_WORKSPACE/Scripts/PRIVATE.sh" ]; then
 	source "$GITHUB_WORKSPACE/Scripts/PRIVATE.sh"
 fi
+# ====================== BBR面板添加 ======================
+# 拉取BBR插件源码
+UPDATE_PACKAGE "bbr" "sirpdboy/luci-app-bbr" "main"
+# 开启编译打包BBR内核模块+网页面板
+echo "CONFIG_PACKAGE_kmod-tcp-bbr=y" >> $CONFIG_FILE
+echo "CONFIG_PACKAGE_luci-app-bbr=y" >> $CONFIG_FILE
+echo "CONFIG_PACKAGE_luci-i18n-bbr-zh-cn=y" >> $CONFIG_FILE
