@@ -1,21 +1,6 @@
 #!/bin/bash
 # SPDX-License-Identifier: MIT
 # Copyright (C) 2026 VIKINGYFY
-# ==================== 全局精简：只保留NN6000-V2，大幅提速 ====================
-# 1. 删除所有ipq5018、ipq6010、ipq6018、ipq807x等其他平台设备树
-rm -rf $GITHUB_WORKSPACE/wrt/target/linux/qualcommax/dts/ipq5018*.dts
-rm -rf $GITHUB_WORKSPACE/wrt/target/linux/qualcommax/dts/ipq6010*.dts
-rm -rf $GITHUB_WORKSPACE/wrt/target/linux/qualcommax/dts/ipq6018*.dts
-rm -rf $GITHUB_WORKSPACE/wrt/target/linux/qualcommax/dts/ipq807*.dts
-
-# 2. ipq6000系列只留你的 ipq6000-nn6000-v2.dts，其余全部删除
-find $GITHUB_WORKSPACE/wrt/target/linux/qualcommax/dts/ -name "ipq6000-*.dts" ! -name "ipq6000-nn6000-v2.dts" -delete
-
-# 3. 关闭无线、文档、测试组件（wifi-no无WiFi固件，完全无用，减少编译任务）
-sed -i 's/CONFIG_WIRELESS=y/# CONFIG_WIRELESS is not set/' $GITHUB_WORKSPACE/wrt/Config-build.in
-sed -i 's/CONFIG_BUILD_DOCS=y/# CONFIG_BUILD_DOCS is not set/' $GITHUB_WORKSPACE/wrt/Config-build.in
-sed -i 's/CONFIG_TESTING=y/# CONFIG_TESTING is not set/' $GITHUB_WORKSPACE/wrt/Config-build.in
-# ==============================================================================
 #移除luci-app-attendedsysupgrade
 sed -i "/attendedsysupgrade/d" $(find ./feeds/luci/collections/ -type f -name "Makefile")
 #修改默认主题
