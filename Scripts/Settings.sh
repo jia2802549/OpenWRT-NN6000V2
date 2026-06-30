@@ -62,7 +62,7 @@ if [[ "${WRT_TARGET^^}" == *"QUALCOMMAX"* ]]; then
 		echo "qualcommax set up nowifi successfully!"
 	fi
 fi
-# 开启内核BBR及FQ队列（跨境优化）
-scripts/config --set-val CONFIG_TCP_BBR y
-scripts/config --set-val CONFIG_NET_SCH_FQ y
-scripts/config --set-val CONFIG_NET_SCH_FQ_CODEL y
+# 开启内核原生BBR+FQ队列（修复路径问题）
+./scripts/config --set-val CONFIG_TCP_BBR y
+./scripts/config --set-val CONFIG_NET_SCH_FQ y
+./scripts/config --set-val CONFIG_NET_SCH_FQ_CODEL y
